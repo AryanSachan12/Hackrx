@@ -1,24 +1,21 @@
 name: Trigger auto deployment for fastapi-server
 
-# When this action will be executed
 on:
-  # Automatically trigger it when detected changes in repo
   push:
     branches: 
-      [ main ]
+      - main
     paths:
-    - '**'
-    - '.github/workflows/fastapi-server-AutoDeployTrigger-e4ebcb2e-8906-4203-bfaf-1507312802ff.yml'
+      - '**'
+      - '.github/workflows/fastapi-server-AutoDeployTrigger-e4ebcb2e-8906-4203-bfaf-1507312802ff.yml'
 
-  # Allow manual trigger 
-  workflow_dispatch:      
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     permissions: 
-      id-token: write #This is required for requesting the OIDC JWT Token
-      contents: read #Required when GH token is used to authenticate with private repo
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout to the branch
@@ -31,19 +28,16 @@ jobs:
           tenant-id: ${{ secrets.FASTAPISERVER_AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.FASTAPISERVER_AZURE_SUBSCRIPTION_ID }}
 
-      - name: Build and push container image to registry
+      - name: Build and deploy to Azure Container App
         uses: azure/container-apps-deploy-action@v2
         with:
           appSourcePath: ${{ github.workspace }}
-          _dockerfilePathKey_: _dockerfilePath_
-          _targetLabelKey_: _targetLabel_
-          registryUrl: 
+          dockerfilePath: ./Dockerfile  # or path relative to root
+          imageToBuild: fastapiserver.azurecr.io/fastapi-server:${{ github.sha }}
+          registryUrl: fastapiserver.azurecr.io
           registryUsername: ${{ secrets.FASTAPISERVER_REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.FASTAPISERVER_REGISTRY_PASSWORD }}
           containerAppName: fastapi-server
           resourceGroup: fastapi
-          imageToBuild: default/[parameters('containerAppName')]:${{ github.sha }}
-          _buildArgumentsKey_: |
-            _buildArgumentsValues_
-
-
+          containerAppEnvironment: fastapi-server-env
+          targetPort: 80  # Or whatever your app listens on
