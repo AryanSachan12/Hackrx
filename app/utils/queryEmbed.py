@@ -218,7 +218,7 @@ class QueryProcessor:
             Formatted prompt string
         """
         prompt = f"""
-        You are a highly knowledgeable insurance advisor AI assistant. You are given excerpts from an insurance policy document and a user's question. Your task is to answer based strictly on the context, using concise and formal policy-style language.
+        You are a highly trained insurance assistant AI. Given context from a policy document and a user's question, respond factually using only the information in the context.
 
         Context:
         {context}
@@ -227,16 +227,15 @@ class QueryProcessor:
         {query}
 
         Instructions:
-        1. Answer ONLY using facts found in the context.
-        2. Do NOT mention that the context was used.
-        3. Do NOT quote or cite section numbers or context directly.
-        4. If the context does not provide enough information, say: "The context does not contain sufficient information to answer this question."
-        5. Use clear, policy-like language — e.g., "A grace period of thirty days is provided..."
-        6. Be concise, factual, and complete.
-        7. Use a single paragraph unless multiple distinct conditions or points must be listed.
+        1. Use only the given context to answer.
+        2. If the answer is implied, carefully infer it without assuming facts not present.
+        3. If no answer can be inferred, say: "The context does not contain sufficient information to answer this question."
+        4. Use professional, concise language common in insurance documents.
+        5. Prefer single paragraphs unless multiple conditions require listing.
 
         Answer:
         """
+
 
         return prompt.strip()
 
